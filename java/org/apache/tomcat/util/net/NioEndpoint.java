@@ -409,6 +409,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                 channel.setIOChannel(socket);
                 channel.reset();
             }
+            //将新收到的链接添加到poller中，poller负责这个链接上的数据读写事宜
             getPoller0().register(channel);
         } catch (Throwable t) {
             ExceptionUtils.handleThrowable(t);
@@ -439,6 +440,13 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
         processSocket((NioSocketWrapper) socketWrapper, socketStatus, dispatch);
     }
 
+    /**
+     * 提交request到线程池进行处理
+     * @param attachment
+     * @param status
+     * @param dispatch
+     * @return
+     */
     protected boolean processSocket(NioSocketWrapper attachment, SocketEvent status, boolean dispatch) {
         try {
             if (attachment == null) {
@@ -890,7 +898,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                             if ( isWorkerAvailable() ) {
                                 unreg(sk, attachment, sk.readyOps());
                                 boolean closeSocket = false;
-                                // Read goes before write
+                                // Read goes before write- 收到请求
                                 if (sk.isReadable()) {
                                     if (!processSocket(attachment, SocketEvent.OPEN_READ, true)) {
                                         closeSocket = true;
