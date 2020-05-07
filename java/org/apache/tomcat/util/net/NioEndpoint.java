@@ -704,6 +704,7 @@ public class NioEndpoint extends AbstractEndpoint<NioChannel> {
 
                     // setSocketOptions() will add channel to the poller
                     // if successful
+                    // 接收请求后，通过setSocketOptions进行后续处理
                     if (running && !paused) {
                         if (!setSocketOptions(socket)) {
                             countDownConnection();
@@ -1133,7 +1134,7 @@ public class NioEndpoint extends AbstractEndpoint<NioChannel> {
                     attachment.access();//make sure we don't time out valid sockets
                     NioChannel channel = attachment.getChannel();
                     if (sk.isReadable() || sk.isWritable() ) {
-                        if ( attachment.getSendfileData() != null ) {
+                        if ( attachment.getSendfileData() != null ) {q
                             processSendfile(sk,attachment, false);
                         } else {
                             if ( isWorkerAvailable() ) {
